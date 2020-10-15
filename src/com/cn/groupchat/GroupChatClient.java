@@ -18,8 +18,8 @@ import java.util.Scanner;
 public class GroupChatClient {
     private SocketChannel socketChannel ;
     private Selector selector;
-    private String host = "127.0.0.1";
-    private int port = 9898;
+    private final String HOST = "127.0.0.1";
+    private final int PORT = 9898;
     private String userName;
 
     /**
@@ -28,7 +28,7 @@ public class GroupChatClient {
     public GroupChatClient() {
         try {
             socketChannel= SocketChannel.open();
-            socketChannel.connect(new InetSocketAddress(host,port));
+            socketChannel.connect(new InetSocketAddress(HOST,PORT));
             socketChannel.configureBlocking(false);
             selector = Selector.open();
             socketChannel.register(selector, SelectionKey.OP_READ);
@@ -51,11 +51,11 @@ public class GroupChatClient {
         byte[] bytes = msg.getBytes();
         int length = bytes.length;
         int i= 0;
-        int num = -1;
+        int num;
         //长文本判断
         if (length > byteBuffer.capacity()){
             while (length > 0){
-                num = length > byteBuffer.capacity()? byteBuffer.capacity():length;
+                num = Math.min(length, byteBuffer.capacity());
                 byteBuffer.put(bytes, 1024*i++, num);
                 length -= 1024;
                 byteBuffer.flip();
